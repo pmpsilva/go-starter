@@ -20,7 +20,7 @@ func main() {
 
 	//how to add ran id to a logger for example on a request
 	ctx := config.DeriveContextWithRequestId(context.Background())
-	logger.Info("Log with an id", zap.Any("request_id", config.AddCtxAndRequestIDIfPresent(ctx)))
+	logger.Info("Log with an id", config.ZapFieldWithRequestIdFromCtx(ctx))
 
 	connectionString, err := config.BuildDbString()
 	if err != nil {

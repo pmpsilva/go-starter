@@ -3,6 +3,7 @@ package config
 import (
 	"context"
 	"github.com/google/uuid"
+	"go.uber.org/zap"
 )
 
 const (
@@ -38,9 +39,13 @@ func DeriveContextWithRequestId(ctx context.Context) context.Context {
 	return context.WithValue(ctx, RequestIDKey, uuidWithHyphen)
 }
 
-func AddCtxAndRequestIDIfPresent(ctx context.Context) any {
+func addCtxAndRequestIDIfPresent(ctx context.Context) any {
 	if reqID := ctx.Value(RequestIDKey); reqID != nil {
 		return reqID
 	}
 	return nil
+}
+
+func ZapFieldWithRequestIdFromCtx(ctx context.Context) zap.Field {
+	return zap.Any("request_id", addCtxAndRequestIDIfPresent(ctx))
 }
