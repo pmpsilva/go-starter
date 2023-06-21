@@ -8,38 +8,53 @@ bootstrap for golang project with logg database and env
 
 **Zap**
 
-```
-    logger, err := config.BuildLogger()
+```go
+    logger, err := init.BuildLogger()
     if err != nil {
         log.Fatalf("can't initialize zap logger: %v", err)
     }
     
     //how to add an id to the logger (for example on a request)
-    ctx := config.DeriveContextWithRequestId(context.Background())
+    ctx := init.DeriveContextWithRequestId(context.Background())
     logger.Info("Log with an id", config.ZapFieldWithRequestIdFromCtx(ctx))
 
 ```
 
 ## DB
  For database this project uses postgres and the migrations will be on db/migrations folder
- ```
-    dataSource, err := sql.Open("postgres", *connectionString)
+ ```go
+    //red env variables
+    connectionString, err := init.BuildDbString()
     if err != nil {
-     logger.Error("Unable to connect to database", zap.Error(err))
-    os.Exit(1)
+        logger.Error("Fail to get connection string", zap.Error(err))
+        os.Exit(1)
     }
-    defer func(dataSource *sql.DB) {
-        err := dataSource.Close()
-        if err != nil {
-            return
-        }
-    }(dataSource)
+    //open DbConnecion
+    dbConnection, err := init.OpenDbConnection(connectionString, logger)
     if err != nil {
-        logger.Error("Fail to run migrations", zap.Error(err))
-    os.Exit(1)
+        os.Exit(1)
     }
+	//to use migrations on //db/migartions
+    _ = init.RunMigrations(dataSource, logger)
+    
+    //transactionManager initialization 
+    transactionManager := init.NewTransactionManager(dataSource)
+    
+    //usage example at service or repository level
+	var resultToReturn uuid.UUID
+	if err := transactionManager.ExecWithTransaction(func(tx *sql.Tx) error {
+		//repository method to perform some query to db
+		dbResult := uuid.New()
+		if err != nil {
+			return err
+		}
+		//attach result to external variable
+		resultToReturn = dbResult
 
-    _ = config.RunMigrations(dataSource, logger)
+		return nil
+	}); err != nil {
+		//deal with error
+	}
 ```
 
 ## Env Variables

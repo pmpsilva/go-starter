@@ -1,4 +1,4 @@
-package config
+package init
 
 import (
 	"database/sql"
@@ -33,6 +33,25 @@ func BuildDbString() (*string, error) {
 		host, port, user, password, name)
 
 	return &psqlInfo, nil
+}
+
+func OpenDbConnection(connectionString *string, logger *zap.Logger) (*sql.DB, error) {
+	dataSource, err := sql.Open("postgres", *connectionString)
+	if err != nil {
+		logger.Error("Unable to connect to database", zap.Error(err))
+		return nil, err
+	}
+	defer func(dataSource *sql.DB) {
+		err := dataSource.Close()
+		if err != nil {
+			return
+		}
+	}(dataSource)
+	if err != nil {
+		logger.Error("Fail to close connection to  database", zap.Error(err))
+		return nil, err
+	}
+	return dataSource, nil
 }
 
 func RunMigrations(db *sql.DB, log *zap.Logger) error {

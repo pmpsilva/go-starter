@@ -1,4 +1,4 @@
-package config
+package init
 
 import (
 	"context"
@@ -23,7 +23,7 @@ type httpConfig struct {
 	ProfEnabled             bool
 }
 
-//ReadHttpConfig initialize the HTTPConfig
+// ReadHttpConfig initialize the HTTPConfig
 func ReadHttpConfig() *httpConfig {
 	var h httpConfig
 	h.Port = ReadEnvVarOrDefault(hTTPPort, httpDefaultPort)
