@@ -6,6 +6,11 @@ import (
 	"strings"
 )
 
+const (
+	loggerEnv        = "LOGGER_ENV"
+	defaultLoggerEnv = "development"
+)
+
 func GetVariableValue(variableName string) string {
 	variable := os.Getenv(variableName)
 	return variable

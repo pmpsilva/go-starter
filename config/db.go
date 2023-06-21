@@ -35,12 +35,7 @@ func BuildDbString() (*string, error) {
 	return &psqlInfo, nil
 }
 
-func RunMigrations(connectionString string, log *zap.Logger) error {
-	db, err := sql.Open("postgres", connectionString)
-	if err != nil {
-		log.Error(err.Error())
-		return err
-	}
+func RunMigrations(db *sql.DB, log *zap.Logger) error {
 	driver, err := postgres.WithInstance(db, &postgres.Config{})
 	if err != nil {
 		log.Error(err.Error())
@@ -53,7 +48,8 @@ func RunMigrations(connectionString string, log *zap.Logger) error {
 		log.Warn(err.Error())
 		return err
 	}
-	err = m.Steps(2)
+
+	err = m.Up()
 
 	if err != nil {
 		log.Warn(err.Error())
