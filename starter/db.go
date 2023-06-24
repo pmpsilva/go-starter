@@ -1,4 +1,4 @@
-package init
+package starter
 
 import (
 	"database/sql"
@@ -71,7 +71,7 @@ func RunMigrations(db *sql.DB, log *zap.Logger) error {
 	err = m.Up()
 
 	if err != nil {
-		log.Warn(err.Error())
+		log.Info(err.Error())
 		return err
 	}
 	return nil

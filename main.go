@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	"database/sql"
-	"github.com/pmpsilva/go-starter/init"
+	"github.com/pmpsilva/go-starter/starter"
 	"go.uber.org/zap"
 	"log"
 	"os"
@@ -12,33 +12,33 @@ import (
 // todo to be removed on future versions.
 func main() {
 
-	logger, err := init.BuildLogger()
+	logger, err := starter.BuildLogger()
 	if err != nil {
 		log.Fatalf("can't initialize zap logger: %v", err)
 	}
 
 	//how to add an id to the logger (for example on a request)
-	ctx := init.DeriveContextWithRequestId(context.Background())
-	logger.Info("Log with an id", init.ZapFieldWithRequestIdFromCtx(ctx))
+	ctx := starter.DeriveContextWithRequestId(context.Background())
+	logger.Info("Log with an id", starter.ZapFieldWithRequestIdFromCtx(ctx))
 
-	connectionString, err := init.BuildDbString()
+	connectionString, err := starter.BuildDbString()
 	if err != nil {
 		logger.Error("Fail to get connection string", zap.Error(err))
 		os.Exit(1)
 	}
 
 	//open DbConnecion
-	dbConnection, err := init.OpenDbConnection(connectionString, logger)
+	dbConnection, err := starter.OpenDbConnection(connectionString, logger)
 	if err != nil {
 		os.Exit(1)
 	}
 
 	//to use migrations at //db/migrations
-	_ = init.RunMigrations(dbConnection, logger)
+	_ = starter.RunMigrations(dbConnection, logger)
 
 	//transaction manager usage
 	//initialization
-	transactionManager := init.NewTransactionManager(dbConnection)
+	transactionManager := starter.NewTransactionManager(dbConnection)
 	//at service or repository level
 	if err := transactionManager.ExecWithTransaction(func(tx *sql.Tx) error {
 		//repository method to perform some query to db

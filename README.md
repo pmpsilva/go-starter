@@ -24,21 +24,21 @@ bootstrap for golang project with logg database and env
  For database this project uses postgres and the migrations will be on db/migrations folder
  ```go
     //red env variables
-    connectionString, err := init.BuildDbString()
+    connectionString, err := starter.BuildDbString()
     if err != nil {
         logger.Error("Fail to get connection string", zap.Error(err))
         os.Exit(1)
     }
     //open DbConnecion
-    dbConnection, err := init.OpenDbConnection(connectionString, logger)
+    dbConnection, err := starter.OpenDbConnection(connectionString, logger)
     if err != nil {
         os.Exit(1)
     }
 	//to use migrations on //db/migartions
-    _ = init.RunMigrations(dataSource, logger)
+    _ = starter.RunMigrations(dataSource, logger)
     
     //transactionManager initialization 
-    transactionManager := init.NewTransactionManager(dataSource)
+    transactionManager := starter.NewTransactionManager(dataSource)
     
     //usage example at service or repository level
 	var resultToReturn uuid.UUID
