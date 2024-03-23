@@ -18,14 +18,14 @@ const (
 	RequestIDKey        = "requestID"
 )
 
-type httpConfig struct {
+type HttpConfig struct {
 	Port, Host, ContextPath string
 	ProfEnabled             bool
 }
 
 // ReadHttpConfig initialize the HTTPConfig
-func ReadHttpConfig() *httpConfig {
-	var h httpConfig
+func ReadHttpConfig() *HttpConfig {
+	var h HttpConfig
 	h.Port = ReadEnvVarOrDefault(hTTPPort, httpDefaultPort)
 	h.Host = ReadEnvVarOrDefault(hTTPHost, httpDefaultHost)
 	h.ContextPath = ReadEnvVarOrDefault(contextPath, defaultContextPath)

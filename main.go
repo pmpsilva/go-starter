@@ -27,7 +27,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	//open DbConnecion
+	//open DbConnection
 	dbConnection, err := starter.OpenDbConnection(connectionString, logger)
 	if err != nil {
 		os.Exit(1)
